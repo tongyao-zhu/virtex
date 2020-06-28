@@ -41,9 +41,11 @@ group.add_argument(
 
 def main(_A: argparse.Namespace):
 
+    is_cpu = False
     if _A.num_gpus_per_machine == 0:
         # Set device as CPU if num_gpus_per_machine = 0.
         device = torch.device("cpu")
+        is_cpu = True
     else:
         # Get the current device as set for current distributed process.
         # Check `launch` function in `virtex.utils.distributed` module.
@@ -106,32 +108,33 @@ def main(_A: argparse.Namespace):
     # Create an iterator from dataloader to sample batches perpetually.
     train_dataloader_iter = cycle(train_dataloader, device, start_iteration)
 
-    # Wrap model and optimizer using NVIDIA Apex for mixed precision training.
-    # NOTE: Always do this before wrapping model with DistributedDataParallel.
-    if _C.FP16_OPT > 0:
-        from apex import amp
+    if (not is_cpu):
+        # Wrap model and optimizer using NVIDIA Apex for mixed precision training.
+        # NOTE: Always do this before wrapping model with DistributedDataParallel.
+        if _C.FP16_OPT > 0:
+            from apex import amp
 
-        model, optimizer = amp.initialize(
-            model, optimizer, opt_level=f"O{_C.FP16_OPT}"
-        )
+            model, optimizer = amp.initialize(
+                model, optimizer, opt_level=f"O{_C.FP16_OPT}"
+            )
 
-    # Wrap model in DDP if using more than one processes.
-    if dist.get_world_size() > 1:
-        dist.synchronize()
-        model = nn.parallel.DistributedDataParallel(
-            model, device_ids=[device], find_unused_parameters=True
-        )
+        # Wrap model in DDP if using more than one processes.
+        if dist.get_world_size() > 1:
+            dist.synchronize()
+            model = nn.parallel.DistributedDataParallel(
+                model, device_ids=[device], find_unused_parameters=True
+            )
 
-    # Create checkpoint manager and tensorboard writer (only in master process).
-    if dist.is_master_process():
-        checkpoint_manager = CheckpointManager(
-            _A.serialization_dir,
-            model=model,
-            optimizer=optimizer,
-            scheduler=scheduler,
-        )
-        tensorboard_writer = SummaryWriter(log_dir=_A.serialization_dir)
-        tensorboard_writer.add_text("config", f"```\n{_C}\n```")
+        # Create checkpoint manager and tensorboard writer (only in master process).
+        if dist.is_master_process():
+            checkpoint_manager = CheckpointManager(
+                _A.serialization_dir,
+                model=model,
+                optimizer=optimizer,
+                scheduler=scheduler,
+            )
+            tensorboard_writer = SummaryWriter(log_dir=_A.serialization_dir)
+            tensorboard_writer.add_text("config", f"```\n{_C}\n```")
 
     # -------------------------------------------------------------------------
     #   TRAINING LOOP
