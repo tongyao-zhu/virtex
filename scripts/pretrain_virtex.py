@@ -40,7 +40,7 @@ group.add_argument(
 
 
 def main(_A: argparse.Namespace):
-
+    apex = False
     is_cpu = False
     if _A.num_gpus_per_machine == 0:
         # Set device as CPU if num_gpus_per_machine = 0.
@@ -111,12 +111,13 @@ def main(_A: argparse.Namespace):
     if (not is_cpu):
         # Wrap model and optimizer using NVIDIA Apex for mixed precision training.
         # NOTE: Always do this before wrapping model with DistributedDataParallel.
-        # if _C.FP16_OPT > 0:
-        #     from apex import amp
-        #
-        #     model, optimizer = amp.initialize(
-        #         model, optimizer, opt_level=f"O{_C.FP16_OPT}"
-        #     )
+        if apex:
+            if _C.FP16_OPT > 0:
+                from apex import amp
+
+                model, optimizer = amp.initialize(
+                    model, optimizer, opt_level=f"O{_C.FP16_OPT}"
+                )
 
         # Wrap model in DDP if using more than one processes.
         if dist.get_world_size() > 1:
@@ -152,7 +153,7 @@ def main(_A: argparse.Namespace):
         batch_loss += loss.item()
 
         # Perform dynamic scaling of loss to adjust for mixed precision.
-        if _C.FP16_OPT > 0:
+        if apex and _C.FP16_OPT > 0:
             with amp.scale_loss(loss, optimizer) as scaled_loss:
                 scaled_loss.backward()
         else:
@@ -160,7 +161,7 @@ def main(_A: argparse.Namespace):
 
         # Clip norm of gradients before optimizer step.
         torch.nn.utils.clip_grad_norm_(
-            amp.master_params(optimizer) if _C.FP16_OPT > 0 else model.parameters(),
+            amp.master_params(optimizer) if apex and _C.FP16_OPT > 0 else model.parameters(),
             _C.OPTIM.CLIP_GRAD_NORM,
         )
         optimizer.step()
