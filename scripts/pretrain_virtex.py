@@ -66,8 +66,8 @@ def main(_A: argparse.Namespace):
     train_dataloader = DataLoader(
         train_dataset,
         batch_size=_C.OPTIM.BATCH_SIZE // dist.get_world_size(),
-        sampler= Sampler(train_dataset),
-        #sampler=DistributedSampler(train_dataset, shuffle=True),
+        #sampler= Sampler(train_dataset),
+        sampler=DistributedSampler(train_dataset, shuffle=True),
         num_workers=_A.cpu_workers,
         pin_memory=True,
         drop_last=True,
@@ -76,8 +76,8 @@ def main(_A: argparse.Namespace):
     val_dataloader = DataLoader(
         val_dataset,
         batch_size=_C.OPTIM.BATCH_SIZE // dist.get_world_size(),
-        sampler = Sampler(val_dataset),
-        #sampler=DistributedSampler(val_dataset, shuffle=False),
+        # sampler = Sampler(val_dataset),
+        sampler=DistributedSampler(val_dataset, shuffle=False),
         num_workers=_A.cpu_workers,
         pin_memory=True,
         drop_last=False,
@@ -111,12 +111,12 @@ def main(_A: argparse.Namespace):
     if (not is_cpu):
         # Wrap model and optimizer using NVIDIA Apex for mixed precision training.
         # NOTE: Always do this before wrapping model with DistributedDataParallel.
-        if _C.FP16_OPT > 0:
-            from apex import amp
-
-            model, optimizer = amp.initialize(
-                model, optimizer, opt_level=f"O{_C.FP16_OPT}"
-            )
+        # if _C.FP16_OPT > 0:
+        #     from apex import amp
+        #
+        #     model, optimizer = amp.initialize(
+        #         model, optimizer, opt_level=f"O{_C.FP16_OPT}"
+        #     )
 
         # Wrap model in DDP if using more than one processes.
         if dist.get_world_size() > 1:
