@@ -62,7 +62,7 @@ def _read_captions(annotations_path: str) -> List[str]:
             captions.append(ann["caption"])
 
     elif annotations_path.endswith("csv"):
-        df = pd.read_csv(annotations_path)
+        df = pd.read_csv(annotations_path, delimiter = "|")
         captions = list(df.orth)
     else:
         raise Exception("Wrong input caption file")
