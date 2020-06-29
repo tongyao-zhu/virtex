@@ -10,16 +10,63 @@ import os
 import pickle
 import random
 from typing import Dict, List, Tuple
-
+import numpy as np
+import pandas as pd
 import cv2
 import lmdb
 from loguru import logger
 from torch.utils.data import Dataset
 
-
 # Some simplified type renaming for better readability
 ImageID = int
 Captions = List[str]
+VideoID = int
+
+
+class VideoCaptionReader(Dataset):
+    r"""
+    A reader interface to read COCO Captions dataset and directly from official
+    annotation files and return it unprocessed. We only use this for serializing
+    the dataset to LMDB files, and use :class:`~virtex.data.readers.LmdbReader`
+    in rest of the datasets.
+
+    Parameters
+    ----------
+    root: str, optional (default = "datasets/coco")
+        Path to the COCO dataset root directory.
+    split: str, optional (default = "train")
+        Which split (from COCO 2017 version) to read. One of ``{"train", "val"}``.
+    """
+
+    def __init__(self, root: str = "datasets/phoenix", csv: str="PHOENIX-2014-T.train.corpus.csv", padded_length=400):
+
+        self.root = root
+        self.padded_length = padded_length
+        info_df = pd.read_csv(os.path.join(root, csv), delimiter = "|")
+        self.id_filename = []
+        self.id_to_caption = {}
+        for index, row in info_df.iterrows():
+            self.id_filename.append((index,row['name']))
+            self.id_to_caption[index] = [row['orth']]
+
+
+    def __len__(self):
+        return len(self.id_filename)
+
+    def __getitem__(self, idx: int):
+        video_id, filename = self.id_filename[idx]
+
+        # shape: (height, width, channels), dtype: uint8
+        original_video = np.load(os.path.join(self.root, "video_tensors", f"{filename}.npy"))
+        if (len(original_video)) >= self.padded_length:
+            padded_video = original_video[:self.padded_length, :, :, :]
+        else:
+            padded_video = np.zeros(
+                [self.padded_length, original_video.shape[1], original_video.shape[2], original_video.shape[3]])
+            padded_video[:len(original_video), :, :, :] = original_video
+        captions = self.id_to_caption[video_id]
+
+        return {"video_id": video_id, "video": padded_video, "captions": captions}
 
 
 class SimpleCocoCaptionsReader(Dataset):
@@ -36,8 +83,8 @@ class SimpleCocoCaptionsReader(Dataset):
     split: str, optional (default = "train")
         Which split (from COCO 2017 version) to read. One of ``{"train", "val"}``.
     """
-    def __init__(self, root: str = "datasets/coco", split: str = "train"):
 
+    def __init__(self, root: str = "datasets/coco", split: str = "train"):
         image_dir = os.path.join(root, f"{split}2017")
 
         # Make a tuple of image id and its filename, get image_id from its
