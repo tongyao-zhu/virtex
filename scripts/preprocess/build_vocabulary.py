@@ -4,7 +4,7 @@ import os
 import tempfile
 import unicodedata
 from typing import List
-
+import pandas as pd
 import sentencepiece as sp
 
 
@@ -54,12 +54,18 @@ def _read_captions(annotations_path: str) -> List[str]:
         List of captions from this annotation file.
     """
 
-    _annotations = json.load(open(annotations_path))
+    if (annotations_path.endswith("json")):
+        _annotations = json.load(open(annotations_path))
 
-    captions: List[str] = []
-    for ann in _annotations["annotations"]:
-        captions.append(ann["caption"])
+        captions: List[str] = []
+        for ann in _annotations["annotations"]:
+            captions.append(ann["caption"])
 
+    elif annotations_path.endswith("csv"):
+        df = pd.read_csv(annotations_path)
+        captions = list(df.orth)
+    else:
+        raise Exception("Wrong input caption file")
     return captions
 
 
