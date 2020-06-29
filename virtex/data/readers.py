@@ -57,7 +57,7 @@ class VideoCaptionReader(Dataset):
         video_id, filename = self.id_filename[idx]
 
         # shape: (height, width, channels), dtype: uint8
-        original_video = np.load(os.path.join(self.root, "video_tensors", f"{filename}.npy"))
+        original_video = np.load(os.path.join(self.root, "video_vectors", f"{filename}.npy"))
         if (len(original_video)) >= self.padded_length:
             padded_video = original_video[:self.padded_length, :, :, :]
         else:
