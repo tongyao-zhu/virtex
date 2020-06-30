@@ -26,7 +26,7 @@ class VideoCaptioningDataset(Dataset):
             percentage: float = 100.0,
     ):
         self.data_root = data_root
-        self.padded_length = padded_length,
+        self.padded_length = padded_length
         info_df = pd.read_csv(os.path.join(data_root, csv), delimiter="|")
         self.video_list = []
         for index, row in info_df.iterrows():
@@ -58,7 +58,7 @@ class VideoCaptioningDataset(Dataset):
         # Transform image-caption pair and convert image from HWC to CHW format.
         # Pass in caption to image_transform due to paired horizontal flip.
         # Caption won't be tokenized/processed here.
-        print("padded length is {}".format(self.padded_length))
+        #print("padded length is {}".format(self.padded_length))
         padded_video = np.zeros([self.padded_length, 224, 224, 3])
         for i in range(min(len(video), self.padded_length)):
             image_caption = self.image_transform(image=video[i], caption=caption)
