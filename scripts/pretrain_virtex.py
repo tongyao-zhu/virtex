@@ -60,8 +60,8 @@ def main(_A: argparse.Namespace):
     #   INSTANTIATE DATALOADER, MODEL, OPTIMIZER
     # -------------------------------------------------------------------------
     tokenizer = TokenizerFactory.from_config(_C)
-    train_dataset = PretrainingDatasetFactory.from_config(_C, split="train")
-    val_dataset = PretrainingDatasetFactory.from_config(_C, split="val")
+    train_dataset = PretrainingDatasetFactory.from_config(_C, split="train", csv = _A.train_csv)
+    val_dataset = PretrainingDatasetFactory.from_config(_C, split="val", csv = _A.val_csv)
 
     train_dataloader = DataLoader(
         train_dataset,

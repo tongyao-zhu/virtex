@@ -177,7 +177,7 @@ class PretrainingDatasetFactory(Factory):
     }
 
     @classmethod
-    def from_config(cls, config: Config, split: str = "train"):
+    def from_config(cls, config: Config, split: str = "train", csv: str = None):
         r"""
         Create a dataset directly from config. Names in this factory match with
         names in :class:`PretrainingModelFactory` because both use same config
@@ -220,6 +220,10 @@ class PretrainingDatasetFactory(Factory):
                 percentage=_C.DATA.USE_PERCENTAGE if split == "train" else 100.0,
             )
 
+        if _C.MODEL.NAME == "video_captioning":
+            assert (csv is not None)
+            # add csv path
+            kwargs["csv"] = csv
         # Dataset names match with model names (and ofcourse pretext names).
         return cls.create(_C.MODEL.NAME, **kwargs)
 
