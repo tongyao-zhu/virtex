@@ -61,7 +61,7 @@ class VideoCaptioningDataset(Dataset):
         #print("padded length is {}".format(self.padded_length))
         padded_video = np.zeros([self.padded_length, 224, 224, 3])
         # perform downsampling:
-        if len(video) > padded_video:
+        if len(video) > self.padded_length:
             indices_list = [int(len(video)/self.padded_length * x) for x in range(self.padded_length)]
             while (indices_list[-1] >= len(video)):
                 indices_list[-1] -=1
