@@ -399,6 +399,7 @@ class PretrainingModelFactory(Factory):
     """
 
     PRODUCTS: Dict[str, Callable] = {
+        "video_captioning": vmodels.ForwardCaptioningModel,
         "captioning": vmodels.ForwardCaptioningModel,
         "bicaptioning": vmodels.BidirectionalCaptioningModel,
         "token_classification": vmodels.TokenClassificationModel,
