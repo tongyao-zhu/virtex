@@ -48,7 +48,7 @@ class VideoCaptioningDataset(Dataset):
     def __getitem__(self, idx: int) -> ImageCaptionInstance:
 
         video_id, video_name, captions = self.video_list[idx]
-        video = np.load(os.path.join(self.data_root, "video_vectors", video_name))
+        video = np.load(os.path.join(self.data_root, "video_vectors", f"{video_name}.npy"))
         # Pick a random caption or first caption and process (transform) it.
         if self.use_single_caption:
             caption = captions[0]
