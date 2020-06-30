@@ -20,7 +20,7 @@ class VideoCaptioningDataset(Dataset):
             split: str,
             tokenizer: SentencePieceBPETokenizer,
             image_transform: Callable = T.DEFAULT_IMAGE_TRANSFORM,
-            padded_length: int = 400,
+            padded_length: int = 256,
             max_caption_length: int = 50,
             use_single_caption: bool = False,
             percentage: float = 100.0,
