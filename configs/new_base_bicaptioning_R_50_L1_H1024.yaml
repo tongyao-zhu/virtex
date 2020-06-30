@@ -38,7 +38,7 @@ MODEL:
     PRETRAINED: false
     FROZEN: false
   TEXTUAL:
-    NAME: "transformer_postnorm::L1_H1024_A16_F4096"
+    NAME: "transformer_postnorm::L1_H512_A16_F2048"
     DROPOUT: 0.1
 
 OPTIM:
