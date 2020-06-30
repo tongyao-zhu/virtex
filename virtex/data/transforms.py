@@ -63,7 +63,6 @@ class NormalizeCaption(CaptionOnlyTransform):
         caption = "".join([chr for chr in caption if not unicodedata.combining(chr)])
         return caption
 
-
 class TokenizeCaption(CaptionOnlyTransform):
     r"""
     Tokenize a caption (``str``) to list of tokens (``List[int]``) by the

@@ -169,6 +169,7 @@ class PretrainingDatasetFactory(Factory):
     """
 
     PRODUCTS: Dict[str, Callable] = {
+        "video_captioning": vdata.VideoCaptioningDataset,
         "bicaptioning": vdata.CaptioningDataset,
         "captioning": vdata.CaptioningDataset,
         "token_classification": vdata.CaptioningDataset,
