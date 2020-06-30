@@ -58,6 +58,7 @@ class VideoCaptioningDataset(Dataset):
         # Transform image-caption pair and convert image from HWC to CHW format.
         # Pass in caption to image_transform due to paired horizontal flip.
         # Caption won't be tokenized/processed here.
+        print("padded length is {}".format(self.padded_length))
         padded_video = np.zeros([self.padded_length, 224, 224, 3])
         for i in range(min(len(video), self.padded_length)):
             image_caption = self.image_transform(image=video[i], caption=caption)
