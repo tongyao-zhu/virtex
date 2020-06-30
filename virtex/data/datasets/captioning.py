@@ -27,8 +27,6 @@ class VideoCaptioningDataset(Dataset):
     ):
         self.data_root = data_root
         self.padded_length = padded_length,
-        lmdb_path = os.path.join(data_root, f"serialized_{split}.lmdb")
-        self.reader = LmdbReader(lmdb_path, percentage=percentage)
         info_df = pd.read_csv(os.path.join(data_root, csv), delimiter="|")
         self.video_list = []
         for index, row in info_df.iterrows():
