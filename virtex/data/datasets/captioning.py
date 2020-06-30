@@ -60,6 +60,12 @@ class VideoCaptioningDataset(Dataset):
         # Caption won't be tokenized/processed here.
         #print("padded length is {}".format(self.padded_length))
         padded_video = np.zeros([self.padded_length, 224, 224, 3])
+        # perform downsampling:
+        if len(video) > padded_video:
+            indices_list = [int(len(video)/self.padded_length * x) for x in range(self.padded_length)]
+            while (indices_list[-1] >= len(video)):
+                indices_list[-1] -=1
+            video = video[indices_list]
         for i in range(min(len(video), self.padded_length)):
             image_caption = self.image_transform(image=video[i], caption=caption)
             image, caption = image_caption['image'], image_caption['caption']
