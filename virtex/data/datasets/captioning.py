@@ -43,7 +43,7 @@ class VideoCaptioningDataset(Dataset):
         self.padding_idx = tokenizer.token_to_id("<unk>")
 
     def __len__(self):
-        return len(self.reader)
+        return len(self.video_list)
 
     def __getitem__(self, idx: int) -> ImageCaptionInstance:
 
