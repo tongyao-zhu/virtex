@@ -103,4 +103,5 @@ if __name__ == "__main__":
         " --model_type=bpe --character_coverage=1.0"
         " --bos_id=-1 --eos_id=-1"
         " --control_symbols=[SOS],[EOS],[MASK]"
+        " --hard_vocab_limit=False"
     )
