@@ -22,6 +22,8 @@ from virtex.utils.timer import Timer
 parser = common_parser(
     description="Train a VirTex model (CNN + Transformer) on COCO Captions."
 )
+parser.add_argument("--train_csv", default=None, help = "path to csv of video caption data")
+parser.add_argument("--val_csv", default = None, help = "path to csv of video captioning data(validation set)")
 group = parser.add_argument_group("Checkpointing and Logging")
 group.add_argument(
     "--resume-from", default=None,
