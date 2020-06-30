@@ -6,9 +6,9 @@ RANDOM_SEED: 0
 FP16_OPT: 2
 
 DATA:
-  ROOT: "datasets/coco"
-  TOKENIZER_VOCAB: "datasets/vocab/coco_10k.vocab"
-  TOKENIZER_MODEL: "datasets/vocab/coco_10k.model"
+  ROOT: "datasets/phoenix"
+  TOKENIZER_VOCAB: "datasets/vocab/phoenix.vocab"
+  TOKENIZER_MODEL: "datasets/vocab/phoenix.model"
   VOCAB_SIZE: 10000
   UNK_INDEX: 0
   SOS_INDEX: 1
@@ -16,11 +16,10 @@ DATA:
   MASK_INDEX: 3
 
   IMAGE_CROP_SIZE: 224
-  MAX_CAPTION_LENGTH: 30
+  MAX_CAPTION_LENGTH: 50
 
   IMAGE_TRANSFORM_TRAIN:
     - "random_resized_crop"
-    - "horizontal_flip"
     - "color_jitter"
     - "normalize"
 
@@ -33,7 +32,7 @@ DATA:
   USE_SINGLE_CAPTION: False
 
 MODEL:
-  NAME: "bicaptioning"
+  NAME: "video_captioning"
   VISUAL:
     NAME: "torchvision::resnet50"
     PRETRAINED: false
