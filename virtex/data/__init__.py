@@ -1,4 +1,4 @@
-from .datasets.captioning import CaptioningDataset
+from .datasets.captioning import CaptioningDataset, VideoCaptioningDataset
 from .datasets.multilabel import MultiLabelClassificationDataset
 from .datasets.downstream import (
     ImageNetDataset,
@@ -14,4 +14,5 @@ __all__ = [
     "ImageNetDataset",
     "INaturalist2018Dataset",
     "VOC07ClassificationDataset",
+    "VideoCaptioningDataset",
 ]
