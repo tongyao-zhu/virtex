@@ -139,7 +139,8 @@ class TorchvisionVisualBackbone(VisualBackbone):
               containing features from all intermediate layers and global
               average pooling layer.
         """
-
+        if image.shape[0]==1:
+            image = image[0]
         # Iterate through the modules in sequence and collect feature
         # vectors for last layers in each stage.
         intermediate_outputs: Dict[str, torch.Tensor] = {}
