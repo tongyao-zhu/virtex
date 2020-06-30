@@ -34,7 +34,7 @@ DATA:
 MODEL:
   NAME: "video_captioning"
   VISUAL:
-    NAME: "torchvision::resnet50"
+    NAME: "torchvision::resnet34"
     PRETRAINED: false
     FROZEN: false
   TEXTUAL:
