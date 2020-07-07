@@ -186,12 +186,12 @@ def main(_A: argparse.Namespace):
     with torch.no_grad():
         for batch in tqdm(train_dataloader, desc="Extracting train features:"):
             features = model(batch["image"].to(device))
-            print("train features has shape {}, caption tokens".format(features.shape, batch['caption_tokens']))
+            print("train features has shape {}, caption tokens {}".format(features.shape, batch['caption_tokens']))
             features_train.append(features.cpu())
         # Similarly extract test features.
         for batch in tqdm(test_dataloader, desc="Extracting test features:"):
             features = model(batch["image"].to(device))
-            print("val has shape {}, caption tokens".format(features.shape, batch['caption_tokens']))
+            print("val has shape {}, caption tokens {}".format(features.shape, batch['caption_tokens']))
             features_test.append(features.cpu())
     # Convert batches of features/targets to one large numpy array
     features_train = torch.cat(features_train, dim=0).numpy()
