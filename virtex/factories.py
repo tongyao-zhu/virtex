@@ -299,6 +299,7 @@ class DownstreamDatasetFactory(Factory):
             assert (csv is not None)
             # add csv path
             kwargs["csv"] = csv
+            kwargs['padded_length'] = 400
 
         return cls.create(_C.DATA.ROOT, **kwargs)
 
