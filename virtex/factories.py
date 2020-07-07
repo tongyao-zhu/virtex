@@ -240,10 +240,11 @@ class DownstreamDatasetFactory(Factory):
         "datasets/VOC2007": vdata.VOC07ClassificationDataset,
         "datasets/imagenet": vdata.ImageNetDataset,
         "datasets/inaturalist": vdata.INaturalist2018Dataset,
+        "datasets/phoenix": vdata.VideoCaptioningDataset,
     }
 
     @classmethod
-    def from_config(cls, config: Config, split: str = "train"):
+    def from_config(cls, config: Config, split: str = "train", csv: str = None):
         r"""
         Create a dataset directly from config. Names in this factory are paths
         of dataset directories (relative to the project directory), because
@@ -284,6 +285,11 @@ class DownstreamDatasetFactory(Factory):
             image_transform_list.append(transform)
 
         kwargs["image_transform"] = alb.Compose(image_transform_list)
+
+        if _C.MODEL.NAME == "video_captioning":
+            assert (csv is not None)
+            # add csv path
+            kwargs["csv"] = csv
 
         return cls.create(_C.DATA.ROOT, **kwargs)
 
