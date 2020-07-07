@@ -138,7 +138,7 @@ def main(_A: argparse.Namespace):
     # -------------------------------------------------------------------------
     #   INSTANTIATE DATALOADER, MODEL, AND FEATURE EXTRACTOR
     # -------------------------------------------------------------------------
-
+    print(f"train csv {_A.train_csv}, validation csv {_A.val_csv}")
     train_dataset = DownstreamDatasetFactory.from_config(_DOWNC, split="trainval", csv = _A.train_csv)
     train_dataloader = DataLoader(
         train_dataset,
@@ -154,7 +154,7 @@ def main(_A: argparse.Namespace):
         pin_memory=True,
     )
     NUM_CLASSES = len(train_dataset.class_names)
-
+    print(f"Number of classes in train {NUM_CLASSES}")
     # Initialize from a checkpoint, but only keep the visual module.
     model = PretrainingModelFactory.from_config(_C)
 
