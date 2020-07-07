@@ -185,11 +185,16 @@ def main(_A: argparse.Namespace):
     targets_test: List[torch.Tensor] = []
 
     # VOC07 is small, extract all features and keep them in memory.
+    count = 0
     with torch.no_grad():
         for batch in tqdm(train_dataloader, desc="Extracting train features:"):
             features = model(batch["image"].to(device))
             print("train features has shape {}, video_id {}".format(features.shape, batch['image_id']))
+            if count%5000==0:
+                torch.save(features_train, "./features_train_first.pt")
+                features_train: List[torch.Tensor] = []
             features_train.append(features.cpu())
+            count+=1
         # Similarly extract test features.
         for batch in tqdm(test_dataloader, desc="Extracting test features:"):
             features = model(batch["image"].to(device))
