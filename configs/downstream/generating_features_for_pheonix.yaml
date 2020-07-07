@@ -1,6 +1,6 @@
 RANDOM_SEED: 0
 DATA:
-  ROOT: datasets/VOC2007
+  ROOT: datasets/phoenix
   IMAGE_TRANSFORM_TRAIN:
     - global_resize
     - normalize
