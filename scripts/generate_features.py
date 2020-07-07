@@ -153,8 +153,7 @@ def main(_A: argparse.Namespace):
         num_workers=_A.cpu_workers,
         pin_memory=True,
     )
-    NUM_CLASSES = len(train_dataset.class_names)
-    print(f"Number of classes in train {NUM_CLASSES}")
+    print(f"train dataset length {len(train_dataset)}, validation datasete length {len(test_dataset)}")
     # Initialize from a checkpoint, but only keep the visual module.
     model = PretrainingModelFactory.from_config(_C)
 
@@ -206,8 +205,9 @@ def main(_A: argparse.Namespace):
     targets_test = torch.cat(targets_test, dim=0).numpy().astype(np.int32)
 
     torch.save(features_train, "./features_train.pt")
-    torch.save(features_test, "./features_test.pt")
-
+    print('finished saving features train')
+    torch.save(features_test, "./features_val.pt")
+    print('finished saving features')
 if __name__ == "__main__":
     _A = parser.parse_args()
 
