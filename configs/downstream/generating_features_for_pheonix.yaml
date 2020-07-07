@@ -1,12 +1,24 @@
 RANDOM_SEED: 0
 DATA:
   ROOT: datasets/phoenix
+  TOKENIZER_VOCAB: "datasets/vocab/phoenix.vocab"
+  TOKENIZER_MODEL: "datasets/vocab/phoenix.model"
+  VOCAB_SIZE: 10000
+  UNK_INDEX: 0
+  SOS_INDEX: 1
+  EOS_INDEX: 2
+  MASK_INDEX: 3
+
+  IMAGE_CROP_SIZE: 224
+  MAX_CAPTION_LENGTH: 50
   IMAGE_TRANSFORM_TRAIN:
     - global_resize
     - normalize
   IMAGE_TRANSFORM_VAL:
     - global_resize
     - normalize
+MODEL:
+  NAME: video_captioning
 
 OPTIM:
   # Only used for feature extraction, doesn't mean much.

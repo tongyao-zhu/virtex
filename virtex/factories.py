@@ -286,6 +286,15 @@ class DownstreamDatasetFactory(Factory):
 
         kwargs["image_transform"] = alb.Compose(image_transform_list)
 
+        if _C.MODEL.NAME != "multilabel_classification":
+            tokenizer = TokenizerFactory.from_config(_C)
+            kwargs.update(
+                tokenizer=tokenizer,
+                max_caption_length=_C.DATA.MAX_CAPTION_LENGTH,
+                use_single_caption=_C.DATA.USE_SINGLE_CAPTION,
+                percentage=_C.DATA.USE_PERCENTAGE if split == "train" else 100.0,
+            )
+
         if _C.MODEL.NAME == "video_captioning":
             assert (csv is not None)
             # add csv path
