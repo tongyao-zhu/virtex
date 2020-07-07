@@ -145,6 +145,7 @@ def main(_A: argparse.Namespace):
         batch_size=_DOWNC.OPTIM.BATCH_SIZE,
         num_workers=_A.cpu_workers,
         pin_memory=True,
+        shuffle=False,
     )
     test_dataset = DownstreamDatasetFactory.from_config(_DOWNC, split="test", csv = _A.val_csv)
     test_dataloader = DataLoader(
@@ -152,6 +153,7 @@ def main(_A: argparse.Namespace):
         batch_size=_DOWNC.OPTIM.BATCH_SIZE,
         num_workers=_A.cpu_workers,
         pin_memory=True,
+        shuffle=False,
     )
     print(f"train dataset length {len(train_dataset)}, validation datasete length {len(test_dataset)}")
     # Initialize from a checkpoint, but only keep the visual module.
@@ -186,12 +188,12 @@ def main(_A: argparse.Namespace):
     with torch.no_grad():
         for batch in tqdm(train_dataloader, desc="Extracting train features:"):
             features = model(batch["image"].to(device))
-            print("train features has shape {}, caption tokens {}".format(features.shape, batch['caption_tokens']))
+            print("train features has shape {}, video_id {}".format(features.shape, batch['image_id']))
             features_train.append(features.cpu())
         # Similarly extract test features.
         for batch in tqdm(test_dataloader, desc="Extracting test features:"):
             features = model(batch["image"].to(device))
-            print("val has shape {}, caption tokens {}".format(features.shape, batch['caption_tokens']))
+            print("val has shape {}, video_id {}".format(features.shape, batch['image_id']))
             features_test.append(features.cpu())
     # Convert batches of features/targets to one large numpy array
     features_train = torch.cat(features_train, dim=0).numpy()
