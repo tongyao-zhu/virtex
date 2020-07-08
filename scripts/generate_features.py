@@ -174,13 +174,13 @@ def main(_A: argparse.Namespace):
     with torch.no_grad():
         for batch in tqdm(train_dataloader, desc="Extracting train features:"):
             features = model(batch["image"].to(device))
+            count += 1
             print("train features has shape {}, video_id {}".format(features.shape, batch['image_id']))
             if count % 5000 == 0:
                 features_train = torch.cat(features_train, dim=0).numpy()
                 torch.save(features_train, "./features_train_first_{}.pt".format(_A.csv))
                 features_train = []
             features_train.append(features.cpu())
-            count += 1
 
     features_train = torch.cat(features_train, dim=0).numpy()
     torch.save(features_train, "./features_train_{}.pt".format(_A.csv))
