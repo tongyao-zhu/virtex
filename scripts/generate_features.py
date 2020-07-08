@@ -19,7 +19,6 @@ from virtex.models.downstream import FeatureExtractor
 from virtex.utils.checkpointing import CheckpointManager
 from virtex.utils.common import common_parser, common_setup
 
-
 parser = common_parser(
     description="Train SVMs for VOC2007 classification on a pretrained model."
 )
@@ -34,12 +33,8 @@ group.add_argument(
     help="A list of key-value pairs to modify downstream config params.",
 )
 group.add_argument(
-    "--train_csv",
-    help = "the path to train.csv",
-)
-group.add_argument(
-    "--val_csv",
-    help="the path to validation csv"
+    "--csv",
+    help="the path to csv",
 )
 
 # fmt: off
@@ -62,11 +57,12 @@ parser.add_argument(
     "--checkpoint-path",
     help="Path to load checkpoint and run downstream task evaluation."
 )
+
+
 # fmt: on
 
 
 def train_test_single_svm(args):
-
     feats_train, tgts_train, feats_test, tgts_test, cls_name = args
     SVM_COSTS = [0.01, 0.1, 1.0, 10.0]
 
@@ -118,7 +114,6 @@ def train_test_single_svm(args):
 
 
 def main(_A: argparse.Namespace):
-
     if _A.num_gpus_per_machine == 0:
         # Set device as CPU if num_gpus_per_machine = 0.
         device = torch.device("cpu")
@@ -138,8 +133,8 @@ def main(_A: argparse.Namespace):
     # -------------------------------------------------------------------------
     #   INSTANTIATE DATALOADER, MODEL, AND FEATURE EXTRACTOR
     # -------------------------------------------------------------------------
-    print(f"train csv {_A.train_csv}, validation csv {_A.val_csv}")
-    train_dataset = DownstreamDatasetFactory.from_config(_DOWNC, split="trainval", csv = _A.train_csv)
+    print(f"train csv {_A.train_csv}")
+    train_dataset = DownstreamDatasetFactory.from_config(_DOWNC, split="trainval", csv=_A.train_csv)
     train_dataloader = DataLoader(
         train_dataset,
         batch_size=_DOWNC.OPTIM.BATCH_SIZE,
@@ -147,15 +142,8 @@ def main(_A: argparse.Namespace):
         pin_memory=True,
         shuffle=False,
     )
-    test_dataset = DownstreamDatasetFactory.from_config(_DOWNC, split="test", csv = _A.val_csv)
-    test_dataloader = DataLoader(
-        test_dataset,
-        batch_size=_DOWNC.OPTIM.BATCH_SIZE,
-        num_workers=_A.cpu_workers,
-        pin_memory=True,
-        shuffle=False,
-    )
-    print(f"train dataset length {len(train_dataset)}, validation datasete length {len(test_dataset)}")
+
+    print(f"train dataset length {len(train_dataset)}")
     # Initialize from a checkpoint, but only keep the visual module.
     model = PretrainingModelFactory.from_config(_C)
 
@@ -180,9 +168,7 @@ def main(_A: argparse.Namespace):
 
     features_train: List[torch.Tensor] = []
     targets_train: List[torch.Tensor] = []
-
-    features_test: List[torch.Tensor] = []
-    targets_test: List[torch.Tensor] = []
+    print("input csv is {}".format(_A.csv))
 
     # VOC07 is small, extract all features and keep them in memory.
     count = 0
@@ -190,25 +176,18 @@ def main(_A: argparse.Namespace):
         for batch in tqdm(train_dataloader, desc="Extracting train features:"):
             features = model(batch["image"].to(device))
             print("train features has shape {}, video_id {}".format(features.shape, batch['image_id']))
-            if count%5000==0:
-                torch.save(features_train, "./features_train_first.pt")
-                features_train: List[torch.Tensor] = []
+            if count % 5000 == 0:
+                features_train = torch.cat(features_train, dim=0).numpy()
+                torch.save(features_train, "./features_train_first_{}.pt".format(_A.csv))
+                features_train = []
             features_train.append(features.cpu())
-            count+=1
-        # Similarly extract test features.
-        for batch in tqdm(test_dataloader, desc="Extracting test features:"):
-            features = model(batch["image"].to(device))
-            print("val has shape {}, video_id {}".format(features.shape, batch['image_id']))
-            features_test.append(features.cpu())
-    # Convert batches of features/targets to one large numpy array
+            count += 1
+
     features_train = torch.cat(features_train, dim=0).numpy()
-
-    features_test = torch.cat(features_test, dim=0).numpy()
-
-    torch.save(features_train, "./features_train.pt")
-    print('finished saving features train')
-    torch.save(features_test, "./features_val.pt")
+    torch.save(features_train, "./features_train_{}.pt".format(_A.csv))
     print('finished saving features')
+
+
 if __name__ == "__main__":
     _A = parser.parse_args()
 
