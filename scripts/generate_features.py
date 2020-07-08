@@ -133,8 +133,7 @@ def main(_A: argparse.Namespace):
     # -------------------------------------------------------------------------
     #   INSTANTIATE DATALOADER, MODEL, AND FEATURE EXTRACTOR
     # -------------------------------------------------------------------------
-    print(f"train csv {_A.train_csv}")
-    train_dataset = DownstreamDatasetFactory.from_config(_DOWNC, split="trainval", csv=_A.train_csv)
+    train_dataset = DownstreamDatasetFactory.from_config(_DOWNC, split="trainval", csv=_A.csv)
     train_dataloader = DataLoader(
         train_dataset,
         batch_size=_DOWNC.OPTIM.BATCH_SIZE,
