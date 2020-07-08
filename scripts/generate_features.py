@@ -36,6 +36,10 @@ group.add_argument(
     "--csv",
     help="the path to csv",
 )
+group.add_argument(
+    "--mode",
+    help='the mode we are in'
+)
 
 # fmt: off
 parser.add_argument_group("Checkpointing")
@@ -178,12 +182,12 @@ def main(_A: argparse.Namespace):
             print("train features has shape {}, video_id {}".format(features.shape, batch['image_id']))
             if count % 5000 == 0:
                 features_train = torch.cat(features_train, dim=0).numpy()
-                torch.save(features_train, "./features_train_first_{}.pt".format(_A.csv))
+                torch.save(features_train, "./features_train_first_{}.pt".format(_A.mode))
                 features_train = []
             features_train.append(features.cpu())
 
     features_train = torch.cat(features_train, dim=0).numpy()
-    torch.save(features_train, "./features_train_{}.pt".format(_A.csv))
+    torch.save(features_train, "./features_train_{}.pt".format(_A.mode))
     print('finished saving features')
 
 
