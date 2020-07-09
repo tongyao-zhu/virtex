@@ -181,7 +181,6 @@ def main(_A: argparse.Namespace):
             count += 1
             print("train features has shape {}, video_id {}".format(features.shape, batch['image_id']))
             if count % 1000 == 0:
-                features_train = torch.cat(features_train, dim=0).numpy()
                 torch.save(features_train, "./features_train_first_{}_{}.pt".format(_A.mode, count))
                 features_train = []
             features_train.append(features.cpu())
