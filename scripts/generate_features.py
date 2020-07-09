@@ -178,6 +178,7 @@ def main(_A: argparse.Namespace):
     with torch.no_grad():
         for batch in tqdm(train_dataloader, desc="Extracting train features:"):
             if count<=4000:
+                count+=1
                 continue
             features = model(batch["image"].to(device))
             count += 1
