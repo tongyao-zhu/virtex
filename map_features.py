@@ -33,7 +33,7 @@ def get_tensor(csv_dir, image_list_path, mode, tensor_dir, sub_num):
             tensor_list.append(mode_tensor[video_index][frame_index])
             assert( (mode_tensor[video_index][frame_index]==torch.zeros(2048)).all() == False)
     print(f"finished_processing all lines, tensor_list has shape {len(tensor_list)}")
-    torch.save(torch.stack(tensor_list), f"./features_phoenix/finished_tensor_{mode}.pt")
+    torch.save(tensor_list, f"./features_phoenix/finished_tensor_{mode}.pt")
     print(f"finished saving")
 
 
@@ -51,13 +51,13 @@ if __name__ == "__main__":
     get_tensor(args.csv_dir, args.image_list_path, args.mode, args.tensor_dir , args.sub_num)
 
 
-tensor = torch.load("./train_tensor_2.pt")
-new_list = []
-zero = tensor[0][399]
-for index in range(len(tensor)):
-    for index2 in range(len(tensor[index])):
-        if (tensor[index][index2] == zero).all():
-            print(f"stop at index {index2}")
-            break
-    print(f"video index {index} has length {index2}")
-    new_list.append(tensor[index][:index2])
+# tensor = torch.load("./train_tensor_2.pt")
+# new_list = []
+# zero = tensor[0][399]
+# for index in range(len(tensor)):
+#     for index2 in range(len(tensor[index])):
+#         if (tensor[index][index2] == zero).all():
+#             print(f"stop at index {index2}")
+#             break
+#     print(f"video index {index} has length {index2}")
+#     new_list.append(tensor[index][:index2])
