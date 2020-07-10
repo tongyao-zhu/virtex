@@ -27,6 +27,7 @@ def get_tensor(csv_dir, image_list_path, mode, tensor_dir):
             frame_index = number-1
             seen_video.add(video_name)
             tensor_list.append(mode_tensor[video_index][frame_index])
+            assert( (mode_tensor[video_index][frame_index]==torch.zeros(1048)).all() == False)
     print(f"finished_processing all lines, tensor_list has shape {len(tensor_list)}")
     torch.save(torch.stack(tensor_list), f"./features_phoenix/finished_tensor_{mode}.pt")
     print(f"finished saving")
