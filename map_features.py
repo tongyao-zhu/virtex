@@ -12,6 +12,7 @@ def get_tensor(csv_dir, image_list_path, mode, tensor_dir):
     with open(image_list_path, 'r') as f:
         image_list = f.readlines()
 
+    print(f"image list has {len((image_list))} lines")
     tensor_list = []
 
     mode_tensor = torch.load(os.path.join(tensor_dir, f"{mode}_tensor.pt"))
