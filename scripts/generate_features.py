@@ -177,9 +177,9 @@ def main(_A: argparse.Namespace):
     count = 0
     with torch.no_grad():
         for batch in tqdm(train_dataloader, desc="Extracting train features:"):
-            if count<=4000:
-                count+=1
-                continue
+            # if count<=4000:
+            #     count+=1
+            #     continue
             features = model(batch["image"].to(device))
             count += 1
             print("train features has shape {}, video_id {}".format(features.shape, batch['image_id']))
